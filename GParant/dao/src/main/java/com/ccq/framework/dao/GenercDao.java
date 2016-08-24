@@ -43,14 +43,15 @@ public class GenercDao implements InitializingBean{
 
 	//获取Sqlsession的方式
 	public SqlSession getSqlSession(Class<?> dmoClass) {
-
-		synchronized (classMap) {
-			//如果当前的mapper中没有这个类型的mapper，则创建新的
-			if(!classMap.containsKey(dmoClass)) {
-				Class<?> targetClass = InterfaceMaker.make(dmoClass);
-				//添加映射注解
-				classMap.put(dmoClass, targetClass);
-				getSqlSession().getConfiguration().addMapper(targetClass);
+		if(!classMap.containsKey(dmoClass)) {
+			synchronized (classMap) {
+				//如果当前的mapper中没有这个类型的mapper，则创建新的
+				if(!classMap.containsKey(dmoClass)) {
+					Class<?> targetClass = InterfaceMaker.make(dmoClass);
+					//添加映射注解
+					classMap.put(dmoClass, targetClass);
+					getSqlSession().getConfiguration().addMapper(targetClass);
+				}
 			}
 		}
 		return sqlSession;
